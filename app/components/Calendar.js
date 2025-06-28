@@ -68,13 +68,13 @@ export default function Calendar({ openPopUp }) {
       </h2>
       <div className="flex justify-between mb-4">
         <button
-          className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+          className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] hover:cursor-grab"
           onClick={() => handleMonthChange(-1)}
         >
           &lt;
         </button>
         <button
-          className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+          className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] hover:cursor-grab"
           onClick={() => handleMonthChange(1)}
         >
           &gt;
