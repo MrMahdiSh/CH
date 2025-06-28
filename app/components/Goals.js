@@ -55,7 +55,7 @@ export default function Goals({ openPopUp }) {
             <div
               key={goal.id}
               className={`p-4 mb-2 rounded-lg text-[#E0E0E0] ${
-                goal.status ? "bg-green-600" : "bg-[#3A3A4F]"
+                goal.status == "done" ? "bg-green-600" : "bg-[#3A3A4F]"
               }`}
             >
               <p>
