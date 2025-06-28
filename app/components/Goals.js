@@ -44,6 +44,13 @@ export default function Goals({ openPopUp }) {
       </h2>
       {expanded ? (
         <div>
+          <button
+            className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] mb-4"
+            onClick={() => openPopUp("goal")}
+          >
+            Add New Goal
+          </button>
+
           {goals.map((goal) => (
             <div
               key={goal.id}
@@ -52,7 +59,7 @@ export default function Goals({ openPopUp }) {
               }`}
             >
               <p>
-                <strong>Name:</strong> {goal.description}
+                <strong>Name:</strong> {goal.title}
               </p>
               <p>
                 <strong>Deadline:</strong> {goal.deadline}
@@ -68,12 +75,6 @@ export default function Goals({ openPopUp }) {
               </div>
             </div>
           ))}
-          <button
-            className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] mt-4"
-            onClick={() => openPopUp("goal")}
-          >
-            Add New Goal
-          </button>
         </div>
       ) : (
         <div>

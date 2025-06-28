@@ -172,16 +172,56 @@ export default function Home() {
               </div>
             )}
             {popUpType === "goal" && (
-              <form>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target);
+                  const priority =
+                    formData.get("priority") == "Low"
+                      ? 0
+                      : formData.get("priority") == "Medium"
+                      ? 1
+                      : 3;
+                  const goalData = {
+                    title: formData.get("title"),
+                    deadline: formData.get("date"),
+                    priority: priority,
+                    status: "planned",
+                  };
+                  try {
+                    await axios.post(
+                      "http://127.0.0.1:8000/api/v1/goals",
+                      goalData
+                    );
+                    closePopUp();
+                  } catch (error) {
+                    console.error("Error creating goal:", error);
+                    debugger;
+                  }
+                }}
+              >
                 <input
                   type="text"
+                  name="title"
                   placeholder="Enter name/title"
                   className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                  required
                 />
                 <input
                   type="date"
+                  name="date"
                   className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                  required
                 />
+                <select
+                  name="priority"
+                  className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                  required
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
                 <button
                   type="submit"
                   className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
@@ -191,25 +231,52 @@ export default function Home() {
               </form>
             )}
             {popUpType === "newSession" && (
-              <div>
-                {/* title */}
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target);
+                  const sessionData = {
+                    title: formData.get("title"),
+                    content: formData.get("content"),
+                    type: formData.get("type"),
+                  };
+                  try {
+                    await axios.post("/api/v1/sessions", sessionData);
+                    closePopUp();
+                  } catch (error) {
+                    console.error("Error creating session:", error);
+                    debugger;
+                  }
+                }}
+              >
                 <input
-                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] w-full"
-                  placeholder="write..."
-                ></input>
-                {/* content */}
+                  type="text"
+                  name="title"
+                  placeholder="Enter session title"
+                  className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                  required
+                />
                 <textarea
-                  className="min-h-32 w-full text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] mt-5"
-                  placeholder="write..."
+                  name="content"
+                  placeholder="Enter session content"
+                  className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                  required
                 ></textarea>
-                {/* submit */}
+                <select
+                  name="type"
+                  className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                  required
+                >
+                  <option value="monthly">Monthly</option>
+                  <option value="weekly">Weekly</option>
+                </select>
                 <button
                   type="submit"
-                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] mt-5"
+                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
                 >
                   Submit
                 </button>
-              </div>
+              </form>
             )}
           </div>
         </div>
