@@ -78,9 +78,39 @@ export default function Home() {
               {popUpType === "session" &&
                 (popUpData ? "Session Details" : "Sessions for Selected Day")}
               {popUpType === "newSession" && "New session"}
+              {popUpType === "newRoutines" && "Manage Routines"}
             </h3>
             {popUpType === "task" && (
               <div>
+                <div className="flex gap-3 mb-3">
+                  <button
+                    className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                    onClick={() => {
+                      openPopUp("newRoutines");
+                      const fetch = async () => {
+                        try {
+                          const response = await axios.get(
+                            "http://127.0.0.1:8000/api/v1/routines"
+                          );
+                          setPopUpData(response.data.data);
+                        } catch (error) {
+                          console.error("Error fetching routines:", error);
+                        }
+                      };
+                      fetch();
+                    }}
+                  >
+                    Edit Routines
+                  </button>
+                  <button
+                    className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                    onClick={() => {
+                      setPopUpType("newTask");
+                    }}
+                  >
+                    New Task
+                  </button>
+                </div>
                 <h1 className="text-2xl mb-3">Routines</h1>
                 {popUpData.routine_tasks.length > 0 ? (
                   popUpData.routine_tasks.map((routine, index) => (
@@ -241,7 +271,10 @@ export default function Home() {
                     type: formData.get("type"),
                   };
                   try {
-                    await axios.post("/api/v1/sessions", sessionData);
+                    await axios.post(
+                      "http://127.0.0.1:8000/api/v1/sessions",
+                      sessionData
+                    );
                     closePopUp();
                   } catch (error) {
                     console.error("Error creating session:", error);
@@ -277,6 +310,125 @@ export default function Home() {
                   Submit
                 </button>
               </form>
+            )}
+            {popUpType === "newTask" && (
+              <div>
+                <h1 className="mb-3">{popUpData.date}</h1>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const taskData = {
+                      title: formData.get("title"),
+                      description: "Task details",
+                      date: popUpData.date,
+                      status: "pending", // Fixed status
+                    };
+                    try {
+                      await axios.post(
+                        "http://127.0.0.1:8000/api/v1/tasks",
+                        taskData
+                      );
+                      openPopUp("task", {
+                        ...popUpData,
+                        tasks: [...popUpData.tasks, taskData],
+                      });
+                    } catch (error) {
+                      console.error("Error creating task:", error);
+                      debugger;
+                    }
+                  }}
+                >
+                  <input
+                    type="text"
+                    name="title"
+                    placeholder="Enter task title"
+                    className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                  >
+                    Submit
+                  </button>
+                </form>
+              </div>
+            )}
+            {popUpType === "newRoutines" && (
+              <div>
+                <div>
+                  {popUpData &&
+                    popUpData.map((routine, index) => (
+                      <div
+                        key={index}
+                        className="p-4 mb-2 rounded-lg text-[#E0E0E0] bg-[#3A3A4F] shadow-md border border-[#4A4A5F]"
+                      >
+                        <input
+                          type="text"
+                          defaultValue={routine.title}
+                          className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                          onChange={(e) => {
+                            const updatedRoutine = {
+                              ...routine,
+                              title: e.target.value,
+                            };
+                            setPopUpData((prevData) =>
+                              prevData.map((r) =>
+                                r.id === routine.id ? updatedRoutine : r
+                              )
+                            );
+                          }}
+                        />
+                        <button
+                          className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                          onClick={async () => {
+                            try {
+                              await axios.put(
+                                `http://127.0.0.1:8000/api/v1/routines/${routine.id}`,
+                                routine
+                              );
+                            } catch (error) {
+                              console.error("Error updating routine:", error);
+                            }
+                          }}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                          onClick={async () => {
+                            try {
+                              await axios.delete(
+                                `http://127.0.0.1:8000/api/v1/routines/${routine.id}`
+                              );
+                              setPopUpData((prevData) =>
+                                prevData.filter((r) => r.id !== routine.id)
+                              );
+                            } catch (error) {
+                              console.error("Error deleting routine:", error);
+                            }
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ))}
+                  <button
+                    className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                    onClick={() => {
+                      const newId =
+                        popUpData.length > 0
+                          ? Math.max(...popUpData.map((r) => r.id)) + 1
+                          : 1;
+                      const newRoutine = { id: newId, title: "New Routine" };
+                      setPopUpData((prevData) => [...prevData, newRoutine]);
+                    }}
+                  >
+                    Add Routine
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>
