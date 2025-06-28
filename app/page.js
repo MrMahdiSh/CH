@@ -129,7 +129,7 @@ export default function Home() {
         </div>
 
         {/* Main Column */}
-        <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3">
+        <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3 overflow-y-scroll">
           <Goals openPopUp={openPopUp} />
           <Calendar openPopUp={openPopUp} highlightedDate={highlightedDate} />
           <Sessions openPopUp={openPopUp} />
