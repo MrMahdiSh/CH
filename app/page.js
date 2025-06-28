@@ -20,6 +20,9 @@ export default function Home() {
     setPopUpData(null);
   };
 
+  const toggleStatus = () => {
+    console.log("Clicked");
+  };
   return (
     <div
       className="min-h-screen text-[#E0E0E0] flex justify-center items-center p-8 bg-cover bg-center font-sans"
@@ -32,7 +35,7 @@ export default function Home() {
       </div>
       {popUpType && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center">
-          <div className="p-6 bg-[#2A2A3F] rounded-lg shadow-lg w-full max-w-md">
+          <div className="p-6 bg-[#2A2A3F] rounded-lg shadow-lg w-full max-w-md max-h-[80vh] overflow-y-auto">
             <button
               className="absolute top-2 right-2 text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
               onClick={closePopUp}
@@ -49,11 +52,24 @@ export default function Home() {
               <div>
                 <h1 className="text-2xl mb-3">Routines</h1>
                 {popUpData.routine_tasks.length > 0 ? (
-                  popUpData.routine_tasks.map((task, index) => (
-                    <p key={index} className="text-[#E0E0E0] mb-2">
-                      <strong>Task {index + 1}:</strong>{" "}
-                      {task.routine.title || "Unnamed Routine"}
-                    </p>
+                  popUpData.routine_tasks.map((routine, index) => (
+                    <div key={index} className="text-[#E0E0E0] mb-2">
+                      <p>
+                        <strong>Task {index + 1}:</strong>{" "}
+                        {routine.routine.title || "Unnamed Routine"}
+                      </p>
+                      <div className="flex items-center mt-2">
+                        <input
+                          type="checkbox"
+                          checked={routine.status == "done"}
+                          onChange={() => toggleStatus(routine.id)}
+                          className="mr-2"
+                        />
+                        <span>
+                          {routine.status == "done" ? "Done" : "Pending"}
+                        </span>
+                      </div>
+                    </div>
                   ))
                 ) : (
                   <p className="text-[#C0C0C0]">No Routines.</p>
@@ -79,8 +95,7 @@ export default function Home() {
                   className="w-full border-2 border-slate-700 min-h-20"
                   placeholder="write..."
                   defaultValue={popUpData.sessions[0].content}
-                >
-                </textarea>
+                ></textarea>
                 <button
                   type="submit"
                   className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
