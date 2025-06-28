@@ -10,7 +10,7 @@ export default function Home() {
   const [popUpData, setPopUpData] = useState(null);
 
   const openPopUp = (type, data = null) => {
-    console.log(popUpData);
+    console.log(data);
     setPopUpType(type);
     setPopUpData(data);
   };
@@ -41,22 +41,52 @@ export default function Home() {
             </button>
             <h3 className="text-xl font-bold text-[#E0E0E0] mb-4">
               {popUpType === "goal" && "Add New Goal"}
-              {popUpType === "task" && "Tasks for Selected Day"}
-              {popUpType === "session" && popUpData
-                ? "Session Details"
-                : "Sessions for Selected Day"}
+              {popUpType === "task" && popUpData.date}
+              {popUpType === "session" &&
+                (popUpData ? "Session Details" : "Sessions for Selected Day")}
             </h3>
             {popUpType === "task" && (
               <div>
-                {popUpData.tasks.length > 0 ? (
-                  popUpData.tasks.map((task, index) => (
+                <h1 className="text-2xl mb-3">Routines</h1>
+                {popUpData.routine_tasks.length > 0 ? (
+                  popUpData.routine_tasks.map((task, index) => (
                     <p key={index} className="text-[#E0E0E0] mb-2">
-                      <strong>Task {index + 1}:</strong> {task.name || "Unnamed Task"}
+                      <strong>Task {index + 1}:</strong>{" "}
+                      {task.routine.title || "Unnamed Routine"}
                     </p>
                   ))
                 ) : (
-                  <p className="text-[#C0C0C0]">No tasks available for this day.</p>
+                  <p className="text-[#C0C0C0]">No Routines.</p>
                 )}
+
+                <h1 className="text-2xl mb-3">Tasks</h1>
+
+                {popUpData.tasks.length > 0 ? (
+                  popUpData.tasks.map((task, index) => (
+                    <p key={index} className="text-[#E0E0E0] mb-2">
+                      <strong>Task {index + 1}:</strong>{" "}
+                      {task.title || "Unnamed Task"}
+                    </p>
+                  ))
+                ) : (
+                  <p className="text-[#C0C0C0]">
+                    No tasks available for this day.
+                  </p>
+                )}
+
+                <h1 className="text-2xl mb-3">Session</h1>
+                <textarea
+                  className="w-full border-2 border-slate-700 min-h-20"
+                  placeholder="write..."
+                  defaultValue={popUpData.sessions[0].content}
+                >
+                </textarea>
+                <button
+                  type="submit"
+                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                >
+                  Submit
+                </button>
               </div>
             )}
             {popUpType === "session" && (
@@ -67,13 +97,23 @@ export default function Home() {
                       key={session.id}
                       className="p-4 mb-2 bg-[#3A3A4F] rounded-lg text-[#E0E0E0] cursor-pointer hover:bg-[#4A4A5F]"
                     >
-                      <p><strong>ID:</strong> {session.id}</p>
-                      <p><strong>Title:</strong> {session.title || "Untitled Session"}</p>
-                      <p><strong>Content:</strong> {session.content || "No content available."}</p>
+                      <p>
+                        <strong>ID:</strong> {session.id}
+                      </p>
+                      <p>
+                        <strong>Title:</strong>{" "}
+                        {session.title || "Untitled Session"}
+                      </p>
+                      <p>
+                        <strong>Content:</strong>{" "}
+                        {session.content || "No content available."}
+                      </p>
                     </div>
                   ))
                 ) : (
-                  <p className="text-[#C0C0C0]">No sessions available for this day.</p>
+                  <p className="text-[#C0C0C0]">
+                    No sessions available for this day.
+                  </p>
                 )}
               </div>
             )}
