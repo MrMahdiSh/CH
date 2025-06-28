@@ -147,36 +147,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* {popUpType === "importantTasks" && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center"
-          onClick={closePopUp}
-        >
-          <div
-            className="p-6 bg-[#2A2A3F] rounded-lg shadow-lg w-full max-w-[85%] max-h-[80vh] overflow-y-auto scrollbar-hide"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-xl font-bold text-[#E0E0E0] mb-4">
-              Manage Important Tasks
-            </h3>
-            {popUpData &&
-              }
-            <button
-              className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
-              onClick={() => {
-                const newId =
-                  popUpData.length > 0
-                    ? Math.max(...popUpData.map((t) => t.id)) + 1
-                    : 1;
-                const newTask = { id: newId, title: "New Task" };
-                setPopUpData((prevData) => [...prevData, newTask]);
-              }}
-            >
-              Add Task
-            </button>
-          </div>
-        </div>
-      )} */}
       {popUpType && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center"
@@ -353,12 +323,7 @@ export default function Home() {
                 onSubmit={async (e) => {
                   e.preventDefault();
                   const formData = new FormData(e.target);
-                  const priority =
-                    formData.get("priority") == "Low"
-                      ? 0
-                      : formData.get("priority") == "Medium"
-                      ? 1
-                      : 3;
+                  const priority = 3; // Fixed priority to always be 3
                   const goalData = {
                     title: formData.get("title"),
                     deadline: formData.get("date"),
@@ -466,10 +431,17 @@ export default function Home() {
                   onSubmit={async (e) => {
                     e.preventDefault();
                     const formData = new FormData(e.target);
+                    const priority =
+                      formData.get("priority") == "low"
+                        ? 1
+                        : formData.get("priority") == "medium"
+                        ? 2
+                        : 3;
                     const taskData = {
                       title: formData.get("title"),
                       description: "Task details",
                       date: popUpData.date,
+                      priority: priority,
                       status: "pending", // Fixed status
                     };
                     try {
@@ -494,6 +466,16 @@ export default function Home() {
                     className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
                     required
                   />
+                  <select
+                    name="priority"
+                    className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                    required
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+
                   <button
                     type="submit"
                     className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
