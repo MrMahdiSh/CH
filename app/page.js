@@ -90,9 +90,9 @@ export default function Home() {
       className="min-h-screen text-[#E0E0E0] flex flex-col md:flex-row justify-center items-center p-4 md:p-8 bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/images/background.jpg')" }}
     >
-      <div className="w-full flex flex-col md:flex-row gap-4 md:gap-8">
+      <div className="w-full flex flex-col max-h-[85vh] md:flex-row gap-4 md:gap-8">
         {/* Left Column for Timeline */}
-        <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3">
+        <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3 overflow-y-scroll max-h-[95vh]">
           <h2 className="text-lg md:text-xl font-bold text-[#E0E0E0]">
             Timeline
           </h2>
@@ -136,68 +136,76 @@ export default function Home() {
         </div>
 
         {/* Right Column for Important Tasks */}
-        <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3">
+        <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3 overflow-y-scroll max-h-[95vh]">
           <h2 className="text-lg md:text-xl font-bold text-[#E0E0E0]">
             Important Tasks
           </h2>
           {importantTasks && importantTasks.length > 0 ? (
-            importantTasks.map((task, index) => (
-              <div
-                key={index}
-                className="p-2 md:p-4 mb-2 rounded-lg text-[#E0E0E0] bg-[#3A3A4F] shadow-md border border-[#4A4A5F]"
-                onMouseEnter={() =>
-                  setHighlightedDate({ start: task.day.date, end: task.day.date })
-                }
-                onMouseLeave={() => setHighlightedDate(null)}
-              >
-                <input
-                  type="text"
-                  defaultValue={task.title}
-                  className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
-                  onChange={(e) => {
-                    const updatedTask = {
-                      ...task,
-                      title: e.target.value,
-                    };
-                    setPopUpData((prevData) =>
-                      prevData.map((t) => (t.id === task.id ? updatedTask : t))
-                    );
-                  }}
-                />
-                <button
-                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
-                  onClick={async () => {
-                    try {
-                      await axios.put(
-                        `http://127.0.0.1:8000/api/v1/tasks/${task.id}`,
-                        task
-                      );
-                    } catch (error) {
-                      console.error("Error updating task:", error);
-                    }
-                  }}
+            importantTasks
+              .slice()
+              .reverse()
+              .map((task, index) => (
+                <div
+                  key={index}
+                  className="p-2 md:p-4 mb-2 rounded-lg text-[#E0E0E0] bg-[#3A3A4F] shadow-md border border-[#4A4A5F]"
+                  onMouseEnter={() =>
+                    setHighlightedDate({
+                      start: task.day.date,
+                      end: task.day.date,
+                    })
+                  }
+                  onMouseLeave={() => setHighlightedDate(null)}
                 >
-                  Save
-                </button>
-                <button
-                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
-                  onClick={async () => {
-                    try {
-                      await axios.delete(
-                        `http://127.0.0.1:8000/api/v1/tasks/${task.id}`
-                      );
+                  <input
+                    type="text"
+                    defaultValue={task.title}
+                    className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                    onChange={(e) => {
+                      const updatedTask = {
+                        ...task,
+                        title: e.target.value,
+                      };
                       setPopUpData((prevData) =>
-                        prevData.filter((t) => t.id !== task.id)
+                        prevData.map((t) =>
+                          t.id === task.id ? updatedTask : t
+                        )
                       );
-                    } catch (error) {
-                      console.error("Error deleting task:", error);
-                    }
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            ))
+                    }}
+                  />
+                  <button
+                    className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                    onClick={async () => {
+                      try {
+                        await axios.put(
+                          `http://127.0.0.1:8000/api/v1/tasks/${task.id}`,
+                          task
+                        );
+                      } catch (error) {
+                        console.error("Error updating task:", error);
+                      }
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                    onClick={async () => {
+                      try {
+                        await axios.delete(
+                          `http://127.0.0.1:8000/api/v1/tasks/${task.id}`
+                        );
+                        setPopUpData((prevData) =>
+                          prevData.filter((t) => t.id !== task.id)
+                        );
+                      } catch (error) {
+                        console.error("Error deleting task:", error);
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))
           ) : (
             <h1>There is nothing to show!</h1>
           )}

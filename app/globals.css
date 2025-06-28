@@ -25,3 +25,12 @@ body {
   color: var(--foreground);
   font-family: 'Roboto', sans-serif;
 }
+
+/* Hide the scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  scrollbar-width: none; /* For Firefox */
+}

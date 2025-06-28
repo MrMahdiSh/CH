@@ -50,7 +50,7 @@ export default function Sessions({ openPopUp }) {
           >
             Add New Session
           </button>
-          {sessions.map((session) => (
+          {[...sessions].reverse().map((session) => (
             <div
               key={session.id}
               className="p-4 mb-2 bg-[#3A3A4F] rounded-lg text-[#E0E0E0] cursor-pointer hover:bg-[#4A4A5F]"
