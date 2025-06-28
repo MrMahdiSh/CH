@@ -171,19 +171,47 @@ export default function Home() {
                 )}
 
                 <h1 className="text-2xl mb-3">Session</h1>
-                <textarea
-                  className="w-full border-2 border-slate-700 min-h-20"
-                  placeholder="write..."
-                  defaultValue={
-                    popUpData.sessions[0] && popUpData.sessions[0].content
-                  }
-                ></textarea>
-                <button
-                  type="submit"
-                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                <form
+                  onSubmit={async (e) => {
+                    const formData = new FormData(e.target);
+                    const sessionData = {
+                      type: "daily",
+                      title: formData.get("title"),
+                      content: formData.get("content"),
+                      date: popUpData.date,
+                    };
+                    try {
+                      await axios.post(
+                        "http://127.0.0.1:8000/api/v1/sessions",
+                        sessionData
+                      );
+                      closePopUp();
+                    } catch (error) {
+                      console.error("Error creating goal:", error);
+                      debugger;
+                    }
+                  }}
                 >
-                  Submit
-                </button>
+                  <input
+                    className="w-full border-2 border-slate-700 mt-3 mb-3"
+                    placeholder="write..."
+                    name="title"
+                  ></input>
+                  <textarea
+                    name="content"
+                    className="w-full border-2 border-slate-700 min-h-20"
+                    placeholder="write..."
+                    defaultValue={
+                      popUpData.sessions[0] && popUpData.sessions[0].content
+                    }
+                  ></textarea>
+                  <button
+                    type="submit"
+                    className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                  >
+                    Submit
+                  </button>
+                </form>
               </div>
             )}
             {popUpType === "session" && (
