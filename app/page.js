@@ -187,6 +187,7 @@ export default function Home() {
                         sessionData
                       );
                       closePopUp();
+                      window.location.reload();
                     } catch (error) {
                       console.error("Error creating goal:", error);
                       debugger;
@@ -197,6 +198,9 @@ export default function Home() {
                     className="w-full border-2 border-slate-700 mt-3 mb-3"
                     placeholder="write..."
                     name="title"
+                    defaultValue={
+                      popUpData.sessions[0] && popUpData.sessions[0].title
+                    }
                   ></input>
                   <textarea
                     name="content"
