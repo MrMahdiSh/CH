@@ -11,6 +11,7 @@ export default function Home() {
   const [popUpData, setPopUpData] = useState(null);
   const [importantTasks, setImportantTasks] = useState(null);
   const [highlightedDate, setHighlightedDate] = useState(null);
+  const [timeLines, setTimeLines] = useState([]);
 
   const openPopUp = (type, data = null) => {
     console.log(data);
@@ -69,28 +70,84 @@ export default function Home() {
     }
     fetchImportantTasks();
   }, []);
+
+  useEffect(() => {
+    async function fetchTimeLines() {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/v1/time-lines"
+        );
+        setTimeLines(response.data.timeLine);
+      } catch (error) {
+        console.error("Error fetching timelines:", error);
+      }
+    }
+    fetchTimeLines();
+  }, []);
+
   return (
     <div
-      className="min-h-screen text-[#E0E0E0] flex justify-center items-center p-8 bg-cover bg-center font-sans"
+      className="min-h-screen text-[#E0E0E0] flex flex-col md:flex-row justify-center items-center p-4 md:p-8 bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/images/background.jpg')" }}
     >
-      <div className="w-full max-w-4xl flex flex-row gap-8">
+      <div className="w-full flex flex-col md:flex-row gap-4 md:gap-8">
+        {/* Left Column for Timeline */}
+        <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3">
+          <h2 className="text-lg md:text-xl font-bold text-[#E0E0E0]">
+            Timeline
+          </h2>
+          {timeLines && timeLines.length > 0 ? (
+            timeLines.map((timeline, index) => (
+              <div
+                key={index}
+                className="p-2 md:p-4 mb-2 rounded-lg text-[#E0E0E0] bg-[#3A3A4F] shadow-md border border-[#4A4A5F]"
+                onMouseEnter={() =>
+                  setHighlightedDate({
+                    start: timeline.start_date,
+                    end: timeline.end_date,
+                  })
+                }
+                onMouseLeave={() => setHighlightedDate(null)}
+              >
+                <p>
+                  <strong>Goal:</strong> {timeline.goal}
+                </p>
+                <p>
+                  <strong>Start Date:</strong> {timeline.start_date}
+                </p>
+                <p>
+                  <strong>End Date:</strong> {timeline.end_date}
+                </p>
+                <p>
+                  <strong>Status:</strong> {timeline.status}
+                </p>
+              </div>
+            ))
+          ) : (
+            <h1>There is nothing to show!</h1>
+          )}
+        </div>
+
         {/* Main Column */}
-        <div className="flex flex-col gap-8 bg-[#1E1E2F]/90 p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F]">
+        <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3">
           <Goals openPopUp={openPopUp} />
           <Calendar openPopUp={openPopUp} highlightedDate={highlightedDate} />
           <Sessions openPopUp={openPopUp} />
         </div>
 
         {/* Right Column for Important Tasks */}
-        <div className="flex flex-col gap-8 bg-[#1E1E2F]/90 p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F]">
-          <h2 className="text-xl font-bold text-[#E0E0E0]">Important Tasks</h2>
+        <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3">
+          <h2 className="text-lg md:text-xl font-bold text-[#E0E0E0]">
+            Important Tasks
+          </h2>
           {importantTasks && importantTasks.length > 0 ? (
             importantTasks.map((task, index) => (
               <div
                 key={index}
-                className="p-4 mb-2 rounded-lg text-[#E0E0E0] bg-[#3A3A4F] shadow-md border border-[#4A4A5F]"
-                onMouseEnter={() => setHighlightedDate(task.day.date)}
+                className="p-2 md:p-4 mb-2 rounded-lg text-[#E0E0E0] bg-[#3A3A4F] shadow-md border border-[#4A4A5F]"
+                onMouseEnter={() =>
+                  setHighlightedDate({ start: task.day.date, end: task.day.date })
+                }
                 onMouseLeave={() => setHighlightedDate(null)}
               >
                 <input

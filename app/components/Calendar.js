@@ -53,15 +53,22 @@ export default function Calendar({ openPopUp, highlightedDate }) {
 
       const isHighlighted =
         highlightedDate &&
-        new Date(highlightedDate).getDate() === day &&
-        new Date(highlightedDate).getMonth() === month &&
-        new Date(highlightedDate).getFullYear() === year;
+        new Date(highlightedDate.start).getDate() <= day &&
+        new Date(highlightedDate.end).getDate() >= day &&
+        new Date(highlightedDate.start).getMonth() === month &&
+        new Date(highlightedDate.end).getMonth() === month &&
+        new Date(highlightedDate.start).getFullYear() === year &&
+        new Date(highlightedDate.end).getFullYear() === year;
 
       dayElements.push(
         <div
           key={day}
           className={`day border-2 border-[#948979] rounded-lg p-2 text-center text-[#DFD0B8] cursor-pointer hover:bg-[#3A3A4F] ${
-            isToday ? "bg-green-700" : isHighlighted ? "bg-red-700" : "bg-[#222831]/90"
+            isToday
+              ? "bg-green-700"
+              : isHighlighted
+              ? "bg-red-700"
+              : "bg-[#222831]/90"
           }`}
           onClick={() => handleDateClick(new Date(year, month, day + 1))}
         >
