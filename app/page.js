@@ -69,7 +69,7 @@ export default function Home() {
           onClick={closePopUp}
         >
           <div
-            className="p-6 bg-[#2A2A3F] rounded-lg shadow-lg w-full max-w-md max-h-[80vh] overflow-y-auto scrollbar-hide"
+            className="p-6 bg-[#2A2A3F] rounded-lg shadow-lg w-full max-w-[85%] max-h-[80vh] overflow-y-auto scrollbar-hide"
             onClick={(e) => e.stopPropagation()} // Prevent click propagation
           >
             <h3 className="text-xl font-bold text-[#E0E0E0] mb-4">
@@ -77,6 +77,7 @@ export default function Home() {
               {popUpType === "task" && popUpData.date}
               {popUpType === "session" &&
                 (popUpData ? "Session Details" : "Sessions for Selected Day")}
+              {popUpType === "newSession" && "New session"}
             </h3>
             {popUpType === "task" && (
               <div>
@@ -143,7 +144,9 @@ export default function Home() {
                 <textarea
                   className="w-full border-2 border-slate-700 min-h-20"
                   placeholder="write..."
-                  defaultValue={popUpData.sessions[0].content}
+                  defaultValue={
+                    popUpData.sessions[0] && popUpData.sessions[0].content
+                  }
                 ></textarea>
                 <button
                   type="submit"
@@ -155,30 +158,17 @@ export default function Home() {
             )}
             {popUpType === "session" && (
               <div>
-                {popUpData.sessions.length > 0 ? (
-                  popUpData.sessions.map((session) => (
-                    <div
-                      key={session.id}
-                      className="p-4 mb-2 bg-[#3A3A4F] rounded-lg text-[#E0E0E0] cursor-pointer hover:bg-[#4A4A5F]"
-                    >
-                      <p>
-                        <strong>ID:</strong> {session.id}
-                      </p>
-                      <p>
-                        <strong>Title:</strong>{" "}
-                        {session.title || "Untitled Session"}
-                      </p>
-                      <p>
-                        <strong>Content:</strong>{" "}
-                        {session.content || "No content available."}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-[#C0C0C0]">
-                    No sessions available for this day.
-                  </p>
-                )}
+                <p>
+                  <strong>ID:</strong> {popUpData.id}
+                </p>
+                <p>
+                  <strong>Title:</strong>{" "}
+                  {popUpData.title || "Untitled Session"}
+                </p>
+                <p>
+                  <strong>Content:</strong>{" "}
+                  {popUpData.content || "No content available."}
+                </p>
               </div>
             )}
             {popUpType === "goal" && (
@@ -199,6 +189,27 @@ export default function Home() {
                   Submit
                 </button>
               </form>
+            )}
+            {popUpType === "newSession" && (
+              <div>
+                {/* title */}
+                <input
+                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] w-full"
+                  placeholder="write..."
+                ></input>
+                {/* content */}
+                <textarea
+                  className="min-h-32 w-full text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] mt-5"
+                  placeholder="write..."
+                ></textarea>
+                {/* submit */}
+                <button
+                  type="submit"
+                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F] mt-5"
+                >
+                  Submit
+                </button>
+              </div>
             )}
           </div>
         </div>
