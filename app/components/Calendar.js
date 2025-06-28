@@ -18,12 +18,17 @@ export default function Calendar({ openPopUp }) {
   };
 
   const handleDateClick = async (date) => {
-    setSelectedDate(date);
+    const correctedDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    ); // Ensure the correct date is selected
+    setSelectedDate(correctedDate);
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/api/v1/days/selectByDate",
         {
-          date: date.toISOString().split("T")[0],
+          date: correctedDate.toISOString().split("T")[0],
         }
       );
       setTasks(response.data.data.tasks || []);
@@ -37,20 +42,15 @@ export default function Calendar({ openPopUp }) {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const days = daysInMonth(year, month);
-    const firstDay = new Date(year, month, 1).getDay();
 
     const dayElements = [];
-
-    for (let i = 0; i < firstDay; i++) {
-      dayElements.push(<div key={`empty-${i}`} className="empty-day"></div>);
-    }
 
     for (let day = 1; day <= days; day++) {
       dayElements.push(
         <div
           key={day}
           className="day border-2 border-[#948979] rounded-lg p-2 bg-[#222831]/90 text-center text-[#DFD0B8] cursor-pointer hover:bg-[#3A3A4F]"
-          onClick={() => handleDateClick(new Date(year, month, day))}
+          onClick={() => handleDateClick(new Date(year, month, day + 1))}
         >
           {day}
         </div>

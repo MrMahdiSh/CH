@@ -173,6 +173,7 @@ export default function Home() {
                 <h1 className="text-2xl mb-3">Session</h1>
                 <form
                   onSubmit={async (e) => {
+                    e.preventDefault();
                     const formData = new FormData(e.target);
                     const sessionData = {
                       type: "daily",
@@ -303,6 +304,7 @@ export default function Home() {
                       "http://127.0.0.1:8000/api/v1/sessions",
                       sessionData
                     );
+                    window.location.reload();
                     closePopUp();
                   } catch (error) {
                     console.error("Error creating session:", error);
