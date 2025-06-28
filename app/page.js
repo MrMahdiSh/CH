@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Goals from "./components/Goals";
 import Calendar from "./components/Calendar";
 import Sessions from "./components/Sessions";
@@ -9,6 +9,8 @@ import axios from "axios";
 export default function Home() {
   const [popUpType, setPopUpType] = useState(null);
   const [popUpData, setPopUpData] = useState(null);
+  const [importantTasks, setImportantTasks] = useState(null);
+  const [highlightedDate, setHighlightedDate] = useState(null);
 
   const openPopUp = (type, data = null) => {
     console.log(data);
@@ -53,16 +55,128 @@ export default function Home() {
       console.error("Error updating status:", error);
     }
   };
+
+  useEffect(() => {
+    async function fetchImportantTasks() {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/v1/theTasks/important"
+        );
+        setImportantTasks(response.data.tasks);
+      } catch (error) {
+        console.error("Error fetching important tasks:", error);
+      }
+    }
+    fetchImportantTasks();
+  }, []);
   return (
     <div
       className="min-h-screen text-[#E0E0E0] flex justify-center items-center p-8 bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/images/background.jpg')" }}
     >
-      <div className="w-full max-w-4xl flex flex-col gap-8 bg-[#1E1E2F]/90 p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F]">
-        <Goals openPopUp={openPopUp} />
-        <Calendar openPopUp={openPopUp} />
-        <Sessions openPopUp={openPopUp} />
+      <div className="w-full max-w-4xl flex flex-row gap-8">
+        {/* Main Column */}
+        <div className="flex flex-col gap-8 bg-[#1E1E2F]/90 p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F]">
+          <Goals openPopUp={openPopUp} />
+          <Calendar openPopUp={openPopUp} highlightedDate={highlightedDate} />
+          <Sessions openPopUp={openPopUp} />
+        </div>
+
+        {/* Right Column for Important Tasks */}
+        <div className="flex flex-col gap-8 bg-[#1E1E2F]/90 p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F]">
+          <h2 className="text-xl font-bold text-[#E0E0E0]">Important Tasks</h2>
+          {importantTasks && importantTasks.length > 0 ? (
+            importantTasks.map((task, index) => (
+              <div
+                key={index}
+                className="p-4 mb-2 rounded-lg text-[#E0E0E0] bg-[#3A3A4F] shadow-md border border-[#4A4A5F]"
+                onMouseEnter={() => setHighlightedDate(task.day.date)}
+                onMouseLeave={() => setHighlightedDate(null)}
+              >
+                <input
+                  type="text"
+                  defaultValue={task.title}
+                  className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
+                  onChange={(e) => {
+                    const updatedTask = {
+                      ...task,
+                      title: e.target.value,
+                    };
+                    setPopUpData((prevData) =>
+                      prevData.map((t) => (t.id === task.id ? updatedTask : t))
+                    );
+                  }}
+                />
+                <button
+                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                  onClick={async () => {
+                    try {
+                      await axios.put(
+                        `http://127.0.0.1:8000/api/v1/tasks/${task.id}`,
+                        task
+                      );
+                    } catch (error) {
+                      console.error("Error updating task:", error);
+                    }
+                  }}
+                >
+                  Save
+                </button>
+                <button
+                  className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+                  onClick={async () => {
+                    try {
+                      await axios.delete(
+                        `http://127.0.0.1:8000/api/v1/tasks/${task.id}`
+                      );
+                      setPopUpData((prevData) =>
+                        prevData.filter((t) => t.id !== task.id)
+                      );
+                    } catch (error) {
+                      console.error("Error deleting task:", error);
+                    }
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            ))
+          ) : (
+            <h1>There is nothing to show!</h1>
+          )}
+        </div>
       </div>
+
+      {/* {popUpType === "importantTasks" && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center"
+          onClick={closePopUp}
+        >
+          <div
+            className="p-6 bg-[#2A2A3F] rounded-lg shadow-lg w-full max-w-[85%] max-h-[80vh] overflow-y-auto scrollbar-hide"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-[#E0E0E0] mb-4">
+              Manage Important Tasks
+            </h3>
+            {popUpData &&
+              }
+            <button
+              className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
+              onClick={() => {
+                const newId =
+                  popUpData.length > 0
+                    ? Math.max(...popUpData.map((t) => t.id)) + 1
+                    : 1;
+                const newTask = { id: newId, title: "New Task" };
+                setPopUpData((prevData) => [...prevData, newTask]);
+              }}
+            >
+              Add Task
+            </button>
+          </div>
+        </div>
+      )} */}
       {popUpType && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center"

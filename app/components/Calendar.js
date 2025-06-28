@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function Calendar({ openPopUp }) {
+export default function Calendar({ openPopUp, highlightedDate }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -46,10 +46,23 @@ export default function Calendar({ openPopUp }) {
     const dayElements = [];
 
     for (let day = 1; day <= days; day++) {
+      const isToday =
+        new Date().getDate() === day &&
+        new Date().getMonth() === month &&
+        new Date().getFullYear() === year;
+
+      const isHighlighted =
+        highlightedDate &&
+        new Date(highlightedDate).getDate() === day &&
+        new Date(highlightedDate).getMonth() === month &&
+        new Date(highlightedDate).getFullYear() === year;
+
       dayElements.push(
         <div
           key={day}
-          className="day border-2 border-[#948979] rounded-lg p-2 bg-[#222831]/90 text-center text-[#DFD0B8] cursor-pointer hover:bg-[#3A3A4F]"
+          className={`day border-2 border-[#948979] rounded-lg p-2 text-center text-[#DFD0B8] cursor-pointer hover:bg-[#3A3A4F] ${
+            isToday ? "bg-green-700" : isHighlighted ? "bg-red-700" : "bg-[#222831]/90"
+          }`}
           onClick={() => handleDateClick(new Date(year, month, day + 1))}
         >
           {day}
