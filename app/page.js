@@ -3,6 +3,7 @@ import { useState } from "react";
 import Goals from "./components/Goals";
 import Calendar from "./components/Calendar";
 import Sessions from "./components/Sessions";
+import axios from "axios";
 
 // pages/index.js
 export default function Home() {
@@ -20,8 +21,37 @@ export default function Home() {
     setPopUpData(null);
   };
 
-  const toggleStatus = () => {
-    console.log("Clicked");
+  const toggleStatus = async (id) => {
+    try {
+      const item =
+        popUpData.routine_tasks.find((routine) => routine.id === id) ||
+        popUpData.tasks.find((task) => task.id === id);
+      const updatedItem = {
+        ...item,
+        status: item.status === "done" ? "planned" : "done",
+      };
+      await axios.put(
+        `http://127.0.0.1:8000/api/v1/${item.type}s/${id}`,
+        updatedItem
+      );
+      if (item.type === "routine") {
+        setPopUpData({
+          ...popUpData,
+          routine_tasks: popUpData.routine_tasks.map((routine) =>
+            routine.id === id ? updatedItem : routine
+          ),
+        });
+      } else {
+        setPopUpData({
+          ...popUpData,
+          tasks: popUpData.tasks.map((task) =>
+            task.id === id ? updatedItem : task
+          ),
+        });
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
   };
   return (
     <div
@@ -34,14 +64,14 @@ export default function Home() {
         <Sessions openPopUp={openPopUp} />
       </div>
       {popUpType && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center">
-          <div className="p-6 bg-[#2A2A3F] rounded-lg shadow-lg w-full max-w-md max-h-[80vh] overflow-y-auto">
-            <button
-              className="absolute top-2 right-2 text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
-              onClick={closePopUp}
-            >
-              Close
-            </button>
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center"
+          onClick={closePopUp}
+        >
+          <div
+            className="p-6 bg-[#2A2A3F] rounded-lg shadow-lg w-full max-w-md max-h-[80vh] overflow-y-auto scrollbar-hide"
+            onClick={(e) => e.stopPropagation()} // Prevent click propagation
+          >
             <h3 className="text-xl font-bold text-[#E0E0E0] mb-4">
               {popUpType === "goal" && "Add New Goal"}
               {popUpType === "task" && popUpData.date}
@@ -53,7 +83,10 @@ export default function Home() {
                 <h1 className="text-2xl mb-3">Routines</h1>
                 {popUpData.routine_tasks.length > 0 ? (
                   popUpData.routine_tasks.map((routine, index) => (
-                    <div key={index} className="text-[#E0E0E0] mb-2">
+                    <div
+                      key={index}
+                      className="p-4 mb-2 rounded-lg text-[#E0E0E0] bg-[#3A3A4F] shadow-md border border-[#4A4A5F]"
+                    >
                       <p>
                         <strong>Task {index + 1}:</strong>{" "}
                         {routine.routine.title || "Unnamed Routine"}
@@ -79,10 +112,26 @@ export default function Home() {
 
                 {popUpData.tasks.length > 0 ? (
                   popUpData.tasks.map((task, index) => (
-                    <p key={index} className="text-[#E0E0E0] mb-2">
-                      <strong>Task {index + 1}:</strong>{" "}
-                      {task.title || "Unnamed Task"}
-                    </p>
+                    <div
+                      key={index}
+                      className="p-4 mb-2 rounded-lg text-[#E0E0E0] bg-[#3A3A4F] shadow-md border border-[#4A4A5F]"
+                    >
+                      <p>
+                        <strong>Task {index + 1}:</strong>{" "}
+                        {task.title || "Unnamed Task"}
+                      </p>
+                      <div className="flex items-center mt-2">
+                        <input
+                          type="checkbox"
+                          checked={task.status == "done"}
+                          onChange={() => toggleStatus(task.id)}
+                          className="mr-2"
+                        />
+                        <span>
+                          {task.status == "done" ? "Done" : "Pending"}
+                        </span>
+                      </div>
+                    </div>
                   ))
                 ) : (
                   <p className="text-[#C0C0C0]">
