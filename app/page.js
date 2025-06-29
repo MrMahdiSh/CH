@@ -26,29 +26,35 @@ export default function Home() {
 
   const toggleStatus = async (id) => {
     try {
-      const item =
-        popUpData.routine_tasks.find((routine) => routine.id === id) ||
-        popUpData.tasks.find((task) => task.id === id);
+      const isRoutineTask = popUpData.routine_tasks.some(
+        (routine) => routine.id === id
+      );
+      const item = isRoutineTask
+        ? popUpData.routine_tasks.find((routine) => routine.id === id)
+        : popUpData.tasks.find((task) => task.id === id);
+
       const updatedItem = {
         ...item,
         status: item.status === "done" ? "planned" : "done",
       };
-      await axios.put(
-        `http://127.0.0.1:8000/api/v1/${item.type}s/${id}`,
-        updatedItem
-      );
-      if (item.type === "routine") {
+
+      const url = isRoutineTask
+        ? `http://127.0.0.1:8000/api/v1/routineTasks/${id}`
+        : `http://127.0.0.1:8000/api/v1/tasks/${id}`;
+
+      await axios.put(url, updatedItem);
+      if (isRoutineTask) {
         setPopUpData({
           ...popUpData,
           routine_tasks: popUpData.routine_tasks.map((routine) =>
-            routine.id === id ? updatedItem : routine
+        routine.id === id ? updatedItem : routine
           ),
         });
       } else {
         setPopUpData({
           ...popUpData,
           tasks: popUpData.tasks.map((task) =>
-            task.id === id ? updatedItem : task
+        task.id === id ? updatedItem : task
           ),
         });
       }
