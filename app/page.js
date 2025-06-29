@@ -156,54 +156,12 @@ export default function Home() {
                   }
                   onMouseLeave={() => setHighlightedDate(null)}
                 >
-                  <input
-                    type="text"
-                    defaultValue={task.title}
-                    className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0] mb-2"
-                    onChange={(e) => {
-                      const updatedTask = {
-                        ...task,
-                        title: e.target.value,
-                      };
-                      setPopUpData((prevData) =>
-                        prevData.map((t) =>
-                          t.id === task.id ? updatedTask : t
-                        )
-                      );
-                    }}
-                  />
-                  <button
-                    className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
-                    onClick={async () => {
-                      try {
-                        await axios.put(
-                          `http://127.0.0.1:8000/api/v1/tasks/${task.id}`,
-                          task
-                        );
-                      } catch (error) {
-                        console.error("Error updating task:", error);
-                      }
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
-                    onClick={async () => {
-                      try {
-                        await axios.delete(
-                          `http://127.0.0.1:8000/api/v1/tasks/${task.id}`
-                        );
-                        setPopUpData((prevData) =>
-                          prevData.filter((t) => t.id !== task.id)
-                        );
-                      } catch (error) {
-                        console.error("Error deleting task:", error);
-                      }
-                    }}
-                  >
-                    Delete
-                  </button>
+                  <h1 className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0]">
+                    {task.title}
+                  </h1>
+                  <h1 className="w-full p-2 rounded-lg bg-[#3A3A4F] text-[#E0E0E0]">
+                    {task.day.date}
+                  </h1>
                 </div>
               ))
           ) : (
