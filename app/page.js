@@ -57,6 +57,27 @@ export default function Home() {
     }
   };
 
+  const toggleTimeLineStatus = async (id) => {
+    try {
+      const item = timeLines.find((timeline) => timeline.id === id);
+      const updatedItem = {
+        ...item,
+        status: item.status === "done" ? "planned" : "done",
+      };
+      await axios.put(
+        `http://127.0.0.1:8000/api/v1/time-lines/${id}`,
+        updatedItem
+      );
+      setTimeLines(
+        timeLines.map((timeline) =>
+          timeline.id === id ? updatedItem : timeline
+        )
+      );
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   useEffect(() => {
     async function fetchImportantTasks() {
       try {
@@ -118,9 +139,19 @@ export default function Home() {
                 <p>
                   <strong>End Date:</strong> {timeline.end_date}
                 </p>
-                <p>
-                  <strong>Status:</strong> {timeline.status}
-                </p>
+                <div className="flex gap-1">
+                  {timeline.status === "done" ? (
+                    <div>Done</div>
+                  ) : (
+                    <div>Planned</div>
+                  )}
+                  <input
+                    type="checkbox"
+                    checked={timeline.status === "done"}
+                    onChange={() => toggleTimeLineStatus(timeline.id)}
+                    className="mr-2"
+                  />
+                </div>
               </div>
             ))
           ) : (
