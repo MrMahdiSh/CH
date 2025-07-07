@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { fetchData } from "@/utils/api";
 
 export default function Calendar({ openPopUp, highlightedDate }) {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -25,14 +25,15 @@ export default function Calendar({ openPopUp, highlightedDate }) {
     ); // Ensure the correct date is selected
     setSelectedDate(correctedDate);
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/v1/days/selectByDate",
+      const response = await fetchData(
+        "days/selectByDate",
+        "POST",
         {
           date: correctedDate.toISOString().split("T")[0],
         }
       );
-      setTasks(response.data.data.tasks || []);
-      openPopUp("task", response.data.data);
+      setTasks(response.data.tasks || []);
+      openPopUp("task", response.data);
     } catch (error) {
       console.error("Error fetching day details:", error);
     }

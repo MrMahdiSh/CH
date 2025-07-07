@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { fetchData } from "@/utils/api";
 
 export default function Sessions({ openPopUp }) {
   const [sessions, setSessions] = useState([]);
@@ -10,10 +10,8 @@ export default function Sessions({ openPopUp }) {
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/v1/sessions"
-        );
-        setSessions(response.data.data);
+        const response = await fetchData("sessions");
+        setSessions(response.data);
       } catch (error) {
         console.error("Error fetching sessions:", error);
       }
@@ -24,10 +22,7 @@ export default function Sessions({ openPopUp }) {
 
   const addSession = async (newSession) => {
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/v1/sessions",
-        newSession
-      );
+      const response = await fetchData("sessions", "POST", newSession);
       setSessions([...sessions, response.data]);
     } catch (error) {
       console.error("Error adding session:", error);

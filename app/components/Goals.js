@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { fetchData } from "@/utils/api";
 
 export default function Goals({ openPopUp }) {
   const [expanded, setExpanded] = useState(false);
@@ -10,8 +10,8 @@ export default function Goals({ openPopUp }) {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/v1/goals");
-        setGoals(response.data.data);
+        const response = await fetchData("goals");
+        setGoals(response.data);
       } catch (error) {
         console.error("Error fetching goals:", error);
       }
@@ -27,7 +27,7 @@ export default function Goals({ openPopUp }) {
         ...goal,
         status: goal.status === "done" ? "planned" : "done",
       };
-      await axios.put(`http://127.0.0.1:8000/api/v1/goals/${id}`, updatedGoal);
+      await fetchData(`goals/${id}`, "PUT", updatedGoal);
       setGoals(goals.map((goal) => (goal.id === id ? updatedGoal : goal)));
     } catch (error) {
       console.error("Error updating goal status:", error);

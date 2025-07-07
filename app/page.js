@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Goals from "./components/Goals";
 import Calendar from "./components/Calendar";
 import Sessions from "./components/Sessions";
-import axios from "axios";
+import { fetchData } from "@/utils/api";
 
 // pages/index.js
 export default function Home() {
@@ -39,22 +39,22 @@ export default function Home() {
       };
 
       const url = isRoutineTask
-        ? `http://127.0.0.1:8000/api/v1/routineTasks/${id}`
-        : `http://127.0.0.1:8000/api/v1/tasks/${id}`;
+        ? `routineTasks/${id}`
+        : `tasks/${id}`;
 
-      await axios.put(url, updatedItem);
+      await fetchData(url, "PUT", updatedItem);
       if (isRoutineTask) {
         setPopUpData({
           ...popUpData,
           routine_tasks: popUpData.routine_tasks.map((routine) =>
-        routine.id === id ? updatedItem : routine
+            routine.id === id ? updatedItem : routine
           ),
         });
       } else {
         setPopUpData({
           ...popUpData,
           tasks: popUpData.tasks.map((task) =>
-        task.id === id ? updatedItem : task
+            task.id === id ? updatedItem : task
           ),
         });
       }
@@ -70,10 +70,7 @@ export default function Home() {
         ...item,
         status: item.status === "done" ? "planned" : "done",
       };
-      await axios.put(
-        `http://127.0.0.1:8000/api/v1/time-lines/${id}`,
-        updatedItem
-      );
+      await fetchData(`time-lines/${id}`, "PUT", updatedItem);
       setTimeLines(
         timeLines.map((timeline) =>
           timeline.id === id ? updatedItem : timeline
@@ -87,10 +84,8 @@ export default function Home() {
   useEffect(() => {
     async function fetchImportantTasks() {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/v1/theTasks/important"
-        );
-        setImportantTasks(response.data.tasks);
+        const response = await fetchData("theTasks/important");
+        setImportantTasks(response.tasks);
       } catch (error) {
         console.error("Error fetching important tasks:", error);
       }
@@ -101,10 +96,8 @@ export default function Home() {
   useEffect(() => {
     async function fetchTimeLines() {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/v1/time-lines"
-        );
-        setTimeLines(response.data.timeLine);
+        const response = await fetchData("time-lines");
+        setTimeLines(response.timeLine);
       } catch (error) {
         console.error("Error fetching timelines:", error);
       }
@@ -115,8 +108,8 @@ export default function Home() {
   return (
     <div
       className="min-h-screen text-[#E0E0E0] flex flex-col md:flex-row justify-center items-center p-4 md:p-8 bg-cover bg-center font-sans"
-      style={{ backgroundImage: "url('/images/background.jpg')" }}
     >
+      <img src="/images/background.jpg" alt="background" className="absolute top-0 left-0 w-full h-full object-cover -z-10" />
       <div className="w-full flex flex-col max-h-[85vh] md:flex-row gap-4 md:gap-8">
         {/* Left Column for Timeline */}
         <div className="flex flex-col gap-4 md:gap-8 bg-[#1E1E2F]/90 p-4 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-[#3A3A4F] w-full md:w-1/3 overflow-y-scroll max-h-[95vh]">
@@ -233,10 +226,10 @@ export default function Home() {
                       openPopUp("newRoutines");
                       const fetch = async () => {
                         try {
-                          const response = await axios.get(
-                            "http://127.0.0.1:8000/api/v1/routines"
+                          const response = await fetchData(
+                            "routines"
                           );
-                          setPopUpData(response.data.data);
+                          setPopUpData(response.data);
                         } catch (error) {
                           console.error("Error fetching routines:", error);
                         }
@@ -326,8 +319,9 @@ export default function Home() {
                       date: popUpData.date,
                     };
                     try {
-                      await axios.post(
-                        "http://127.0.0.1:8000/api/v1/sessions",
+                      await fetchData(
+                        "sessions",
+                        "POST",
                         sessionData
                       );
                       closePopUp();
@@ -391,8 +385,9 @@ export default function Home() {
                     status: "planned",
                   };
                   try {
-                    await axios.post(
-                      "http://127.0.0.1:8000/api/v1/goals",
+                    await fetchData(
+                      "goals",
+                      "POST",
                       goalData
                     );
                     closePopUp();
@@ -443,8 +438,9 @@ export default function Home() {
                     type: formData.get("type"),
                   };
                   try {
-                    await axios.post(
-                      "http://127.0.0.1:8000/api/v1/sessions",
+                    await fetchData(
+                      "sessions",
+                      "POST",
                       sessionData
                     );
                     window.location.reload();
@@ -505,8 +501,9 @@ export default function Home() {
                       status: "pending", // Fixed status
                     };
                     try {
-                      await axios.post(
-                        "http://127.0.0.1:8000/api/v1/tasks",
+                      await fetchData(
+                        "tasks",
+                        "POST",
                         taskData
                       );
                       openPopUp("task", {
@@ -574,8 +571,9 @@ export default function Home() {
                           className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
                           onClick={async () => {
                             try {
-                              await axios.put(
-                                `http://127.0.0.1:8000/api/v1/routines/${routine.id}`,
+                              await fetchData(
+                                `routines/${routine.id}`,
+                                "PUT",
                                 routine
                               );
                             } catch (error) {
@@ -589,8 +587,9 @@ export default function Home() {
                           className="text-[#E0E0E0] bg-[#3A3A4F] p-2 rounded-lg hover:bg-[#4A4A5F]"
                           onClick={async () => {
                             try {
-                              await axios.delete(
-                                `http://127.0.0.1:8000/api/v1/routines/${routine.id}`
+                              await fetchData(
+                                `routines/${routine.id}`,
+                                "DELETE"
                               );
                               setPopUpData((prevData) =>
                                 prevData.filter((r) => r.id !== routine.id)
